@@ -1,17 +1,17 @@
 local httpService = game:GetService('HttpService')
-if not isfolder("Shikku Hub")then
-	makefolder("Shikku Hub");
+if not isfolder("Table Hub")then
+	makefolder("Table Hub");
 end;
-if not isfolder("Shikku Hub/themes")then
-	makefolder("Shikku Hub/themes");
+if not isfolder("Table Hub/themes")then
+	makefolder("Table Hub/themes");
 end;
 local ThemeManager = {} do
-	ThemeManager.Folder = 'Shikku Hub/themes'
+	ThemeManager.Folder = 'Table Hub/themes'
 	-- if not isfolder(ThemeManager.Folder) then makefolder(ThemeManager.Folder) end
 
 	ThemeManager.Library = nil
 	ThemeManager.BuiltInThemes = {
-		['Shikku Hub'] 		= { 1, httpService:JSONDecode('{"FontColor":"ffffff","MainColor":"000000","AccentColor":"00cdff","BackgroundColor":"171717","OutlineColor":"292525"}') },
+		['Table Hub'] 		= { 1, httpService:JSONDecode('{"FontColor":"ffffff","MainColor":"000000","AccentColor":"ffb265","BackgroundColor":"171717","OutlineColor":"292525"}') },
 		['Default'] 		= { 2, httpService:JSONDecode('{"FontColor":"ffffff","MainColor":"1c1c1c","AccentColor":"0055ff","BackgroundColor":"141414","OutlineColor":"323232"}') },
 		['Green'] 			= { 3, httpService:JSONDecode('{"FontColor":"ffffff","MainColor":"141414","AccentColor":"00ff8b","BackgroundColor":"1c1c1c","OutlineColor":"3c3c3c"}') },
 		['Jester'] 			= { 4, httpService:JSONDecode('{"FontColor":"ffffff","MainColor":"242424","AccentColor":"db4467","BackgroundColor":"1c1c1c","OutlineColor":"373737"}') },
