@@ -1,7 +1,7 @@
 local httpService = game:GetService('HttpService')
 
 local SaveManager = {} do
-	SaveManager.Folder = 'Shikku Hub'
+	SaveManager.Folder = 'Table Hub'
 	SaveManager.Ignore = {}
 	SaveManager.Parser = {
 		Toggle = {
