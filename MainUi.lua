@@ -1720,12 +1720,12 @@ do
 
     function Funcs:AddDropdown(Idx, Info)
         assert(Info.Text and Info.Values, 'Bad Dropdown Data');
-
         local Dropdown = {
             Values = Info.Values;
             Value = Info.Multi and {};
             Multi = Info.Multi;
             Type = 'Dropdown';
+            callback = Info.Callback
         };
 
         local Groupbox = self;
@@ -1733,17 +1733,19 @@ do
 
         local RelativeOffset = 0;
 
-        local DropdownLabel = Library:CreateLabel({
-            Size = UDim2.new(1, 0, 0, 10);
-            TextSize = 14;
-            Text = Info.Text;
-            TextXAlignment = Enum.TextXAlignment.Left;
-            TextYAlignment = Enum.TextYAlignment.Bottom;
-            ZIndex = 5;
-            Parent = Container;
-        });
+        if not Info.Compact then
+            local DropdownLabel = Library:CreateLabel({
+                Size = UDim2.new(1, 0, 0, 10);
+                TextSize = 14;
+                Text = Info.Text;
+                TextXAlignment = Enum.TextXAlignment.Left;
+                TextYAlignment = Enum.TextYAlignment.Bottom;
+                ZIndex = 5;
+                Parent = Container;
+            });
 
-        Groupbox:AddBlank(3);
+            Groupbox:AddBlank(3);
+        end
 
         for _, Element in next, Container:GetChildren() do
             if not Element:IsA('UIListLayout') then
@@ -1972,7 +1974,9 @@ do
 
                         if Dropdown:GetActiveValues() == 1 and (not Try) and (not Info.AllowNull) then
                         else
+                            local Latretu ;
                             if Info.Multi then
+                                Latretu = {}
                                 Selected = Try;
 
                                 if Selected then
@@ -1980,6 +1984,11 @@ do
                                 else
                                     Dropdown.Value[Value] = nil;
                                 end;
+                                for i,v in next, Dropdown.Value do
+                                    if v then
+                                    table.insert(Latretu,i)
+                                    end
+                                end
                             else
                                 Selected = Try;
 
@@ -1992,16 +2001,18 @@ do
                                 for _, OtherButton in next, Buttons do
                                     OtherButton:UpdateButton();
                                 end;
+                                Latretu = Dropdown.Value
                             end;
 
                             Table:UpdateButton();
                             Dropdown:Display();
 
-                            if Dropdown.Changed then
-                                Dropdown.Changed();
-                            end;
+                            -- if not Info.Multi and Dropdown.Changed then
+                            --     Dropdown.Changed(Dropdown.Value)
+                            -- end;
 
                             Library:AttemptSave();
+                            Dropdown.callback(Latretu)
                         end;
                     end;
                 end);
@@ -2033,7 +2044,7 @@ do
 
         function Dropdown:OnChanged(Func)
             Dropdown.Changed = Func;
-            Func();
+            Func(Dropdown.Value);
         end;
 
         function Dropdown:SetValue(Val)
@@ -2058,7 +2069,7 @@ do
             Dropdown:SetValues();
             Dropdown:Display();
             
-            if Dropdown.Changed then Dropdown.Changed() end
+            if Dropdown.Changed then Dropdown.Changed(Dropdown.Value) end
         end;
 
         DropdownOuter.InputBegan:Connect(function(Input)
@@ -2086,20 +2097,39 @@ do
         Dropdown:SetValues();
         Dropdown:Display();
 
+        local Defaults = {}
+
         if type(Info.Default) == 'string' then
-            Info.Default = table.find(Dropdown.Values, Info.Default)
+            local Idx = table.find(Dropdown.Values, Info.Default)
+            if Idx then
+                table.insert(Defaults, Idx)
+            end
+        elseif type(Info.Default) == 'table' then
+            for _, Value in next, Info.Default do
+                local Idx = table.find(Dropdown.Values, Value)
+                if Idx then
+                    table.insert(Defaults, Idx)
+                end
+            end
+        elseif type(Info.Default) == 'number' and Dropdown.Values[Info.Default] ~= nil then
+            table.insert(Defaults, Info.Default)
         end
 
-        if Info.Default then
-            if Info.Multi then
-                Dropdown.Value[Dropdown.Values[Info.Default]] = true;
-            else
-                Dropdown.Value = Dropdown.Values[Info.Default];
-            end;
+        if next(Defaults) then
+            for i = 1, #Defaults do
+                local Index = Defaults[i]
+                if Info.Multi then
+                    Dropdown.Value[Dropdown.Values[Index]] = true
+                else
+                    Dropdown.Value = Dropdown.Values[Index];
+                end
+
+                if (not Info.Multi) then break end
+            end
 
             Dropdown:SetValues();
             Dropdown:Display();
-        end;
+        end
 
         Groupbox:AddBlank(Info.BlankSize or 5);
         Groupbox:Resize();
